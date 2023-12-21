@@ -47,11 +47,3 @@ public:
         return ret;
     }
 };
-
-int main()
-{
-    Solution* sol = new Solution;
-    sol->removeDuplicateLetters("bcabc");
-
-    return 0;
-}

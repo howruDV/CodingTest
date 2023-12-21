@@ -38,7 +38,7 @@ public:
 // explore ver
 // - Time Complexity O(n^2)
 // - Space Complexity O(1)
-class Solution0 {
+class Solution1 {
 public:
     int numJewelsInStones(string jewels, string stones) {
         int count = 0;
