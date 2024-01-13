@@ -20,14 +20,16 @@ private:
 
 public:
     int leastInterval(vector<char>& tasks, int n) {
-        unordered_map<char, int> taskList;
+        unordered_map<char, int> taskMap;
         int len = 0;
 
         for (char it : tasks)
         {
-            taskList[it]++;
+            taskMap[it]++;
         }
-        //sort(taskList.begin(), taskList.end(), cmp);
+
+        vector<char, int> taskList(taskMap.begin(), taskMap.end());
+        sort(taskList.begin(), taskList.end(), cmp);
 
         int taskIdx = 0;
         int remainN = n;
