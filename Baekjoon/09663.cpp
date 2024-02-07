@@ -9,20 +9,20 @@ vector<int> rowPlacedCol;
 
 void solution(int row)
 {
-	// row기준 위에서 아래로 탐색
+	// explore by row, from top to down
 	if (row == N)
 	{
 		ans++;
 		return;
 	}
 
-	// col 범위
+	// 1. find col
 	for (int col = 0; col < N; ++col)
 	{
 		bool canPlace = true;
 		rowPlacedCol[row] = col;
 
-		// 진행가능(기존에 둔 퀸들) 확인
+		// 2. check if it can be placed (about existing queens)
 		for (int rec = 0; rec < row; ++rec)
 		{
 			if (rowPlacedCol[row] == rowPlacedCol[rec] || abs(rowPlacedCol[row] - rowPlacedCol[rec]) == row - rec)
@@ -32,7 +32,7 @@ void solution(int row)
 			}
 		}
 		
-		// 다음 진행
+		// 3. process next row
 		if (canPlace)
 			solution(row + 1);
 	}
