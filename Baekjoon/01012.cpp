@@ -1,4 +1,4 @@
-// https://www.acmicpc.net/problem/11279
+// https://www.acmicpc.net/problem/1012
 #include <iostream>
 #include <vector>
 using namespace std;
@@ -54,6 +54,7 @@ int main()
 {
 	vector<int> ans;
 
+	// per test case
 	cin >> T;
 	for (int i = 0; i < T; ++i)
 	{
@@ -61,7 +62,7 @@ int main()
 		ans.push_back(solution());
 	}
 
-	cout << endl;
+	// return ans
 	for (int& it: ans)
 		cout << it << endl;
 
