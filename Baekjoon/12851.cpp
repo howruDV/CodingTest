@@ -1,47 +1,58 @@
 // https://www.acmicpc.net/problem/12851
 #include <iostream>
-#include <vector>
-#define LEN_MAX ((N >= K) ? N : K*2)
+#include <queue>
 using namespace std;
 
 int N, K;
-vector<bool> visited;
-int prevTime = INT_MAX;
-int ans = 0;
+bool visit[200000] = { false, };
 
-void Dfs(int pos, int time)
+void Solution()
 {
-	if (pos < 0 || pos >= LEN_MAX || visited[pos])
-		return;
-	else if (ans != 0 && time > prevTime) return;
-	else if (pos == K)
+	queue<pair<int, int>> bfs;	// pos, time
+	int smallestTime = 100000;
+	int ans = 0;
+
+	bfs.push({ N,0 });
+
+	while (!bfs.empty())
 	{
-		if (prevTime > time)
+		int curPos = bfs.front().first;
+		int curTime = bfs.front().second;
+		bfs.pop();
+
+		visit[curPos] = true;
+
+		if (curPos == K)
 		{
-			prevTime = time;
-			ans = 1;
+			if (curTime == smallestTime)
+				ans++;
+			else if (curTime < smallestTime)
+			{
+				ans = 1;
+				smallestTime = curTime;
+			}
+
+			continue;
 		}
-		else if (prevTime == time)
-			ans++;
+
+		if (++curTime > smallestTime)
+			continue;
+
+		if (curPos*2 >= 0 && curPos*2 < 200000 && !visit[curPos*2])
+			bfs.push({ curPos * 2, curTime });
+		if (curPos+1 >= 0 && curPos+1 < 200000 && !visit[curPos+1])
+			bfs.push({curPos + 1, curTime });
+		if (curPos-1 >= 0 && curPos-1 < 200000 && !visit[curPos-1])
+			bfs.push({curPos - 1, curTime });
 	}
 
-	time++;
-	visited[pos] = true;
-
-	Dfs(pos * 2, time);
-	Dfs(pos + 1, time);
-	Dfs(pos - 1, time);
-
-	visited[pos] = false;
+	cout << smallestTime << endl << ans;
 }
 
 int main()
 {
 	cin >> N >> K;
-	visited.resize(LEN_MAX, false);
-
-	Dfs(N, 0);
-	cout << prevTime << endl << ans;
+	Solution();
 
 	return 0;
 }
