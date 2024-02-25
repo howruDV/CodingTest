@@ -121,9 +121,7 @@ int Solution()
 		{
 			// case: 1*4
 			if (IsPossible(row, col, 1, 4))
-			{
 				ans = max(ans, GetMaxScoreByType(BLOCK14, row, col));
-			}
 			if (IsPossible(row, col, 4, 1))
 				ans = max(ans, GetMaxScoreByType(BLOCK14, row, col, false, true));
 
