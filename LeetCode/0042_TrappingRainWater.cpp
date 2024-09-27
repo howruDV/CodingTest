@@ -7,7 +7,12 @@ using namespace std;
 
 class Solution {
 public:
-	int trap(vector<int>& height) {
+	// ======================
+	// 00 : 변곡점 응용
+	// 높이 변화를 기록하는 스택을 쌓다가, 높이가 증가하는 변곡점을 만나면 스택을 풀며 쌓일 수 있는 물 양을 계산한다
+	// ======================
+	// Time Complexity : O(n)
+	int trap0(vector<int>& height) {
 		int ans = 0;
 		deque<pair<int, int>> prevHeight; // stack(height, idx)
 
@@ -51,6 +56,50 @@ public:
 			}
 		}
 
+		return ans;
+	}
+
+	// ======================
+	// 01 : 양끝부터 탐색해 누적시키기
+	// 포인터 두 개를 사용해, 양측 끝으로부터 보장된 낮은곳부터 채워나가기
+	// ======================
+	// Time Complexity : O(n)
+	int trap1(vector<int>& height) {
+		int ans = 0;
+		int leftMax = 0, rightMax = 0;
+		int leftPtr = 0;
+		int rightPtr = height.size() - 1;
+		
+		while (leftPtr < rightPtr)
+		{
+			if (height[leftPtr] < height[rightPtr])
+			{
+				if (height[leftPtr] < leftMax)
+				{
+					ans += leftMax - height[leftPtr];
+				}
+				else
+				{
+					leftMax = height[leftPtr];
+				}
+
+				leftPtr++;
+			}
+			else
+			{
+				if (height[rightPtr] < rightMax)
+				{
+					ans += rightMax - height[rightPtr];
+				}
+				else
+				{
+					rightMax = height[rightPtr];
+				}
+
+				rightPtr--;
+			}
+		}
+		
 		return ans;
 	}
 };
