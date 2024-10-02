@@ -5,7 +5,7 @@
 #include <algorithm>
 using namespace std;
 
-// Time Complexity : O(n)
+// Time Complexity : O(n^2)
 class Solution {
 public:
 	vector<vector<int>> threeSum(vector<int>& nums) {
