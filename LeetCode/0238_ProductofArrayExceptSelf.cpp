@@ -1,10 +1,9 @@
 // LeetCode 0238. Product of Array Except Self
-// https://leetcode.com/problems/product-of-array-except-self/description/
+// https://leetcode.com/problems/product-of-array-except-self/
 // Time Complexity : O(n)
 // Space Complexity : O(1)
 
 #include <vector>
-#include <algorithm>
 using namespace std;
 
 // Time Complexity : O(n)

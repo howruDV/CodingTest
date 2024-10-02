@@ -2,52 +2,26 @@
 // https://leetcode.com/problems/best-time-to-buy-and-sell-stock/description/
 
 #include <vector>
+#include <minmax.h>
 using namespace std;
 
-// - Time Complexity O(n)
-// - Space Complexity O(1)
+// Time Complexity : O(n)
 class Solution {
 public:
     int maxProfit(vector<int>& prices) {
-        int maxProfit = 0;
-        int maxIdx = 0;
-        int minIdx = 0;
-        int maxPrice = 0;
-        unsigned int minPrice = -1;
+        int ans = 0;
+        int min = prices[0];
 
         for (int i = 0; i < prices.size(); ++i)
         {
-            if (prices[i] > maxPrice)
+            if (prices[i] < min)
             {
-                maxIdx = i;
-                maxPrice = prices[i];
-
-                if (minIdx < maxIdx)
-                {
-                    int updateProfit = prices[maxIdx] - prices[minIdx];
-                    if (updateProfit > maxProfit)
-                        maxProfit = updateProfit;
-                }
+                min = prices[i];
             }
-            if (prices[i] < minPrice)
-            {
-                minIdx = i;
-                minPrice = prices[i];
 
-                if (minIdx < maxIdx)
-                {
-                    int updateProfit = prices[maxIdx] - prices[minIdx];
-                    if (updateProfit > maxProfit)
-                        maxProfit = updateProfit;
-                }
-                else
-                {
-                    maxIdx = i;
-                    maxPrice = prices[i];
-                }
-            }
+            ans = max(ans, prices[i] - min);
         }
 
-        return maxProfit;
+        return ans;
     }
 };
