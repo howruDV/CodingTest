@@ -26,7 +26,18 @@ public:
 				if (nums[leftPtr] + nums[rightPtr] == twoSum)
 				{
 					ans.push_back(vector<int>{nums[i], nums[leftPtr], nums[rightPtr]});
+
 					leftPtr++;
+					rightPtr--;
+
+					while (leftPtr < nums.size() && nums[leftPtr] == nums[leftPtr - 1])
+					{
+						leftPtr++;
+					}
+					while (rightPtr > -1 && nums[rightPtr] == nums[rightPtr + 1])
+					{
+						rightPtr--;
+					}
 				}
 				else if (nums[leftPtr] + nums[rightPtr] < twoSum)
 				{
