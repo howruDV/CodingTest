@@ -40,32 +40,15 @@ class Solution {
 	ListNode* Recursively(ListNode* tail, ListNode* mid, ListNode* head)
 	{
 		if (!head)
-		{
-			mid->next = tail;
 			return mid;
-		}
-		else
-		{
-			head = Recursively(mid, head, head->next);
-			mid->next = tail;
-			return head;
-		}
-	}
 
-	ListNode* Recursively(ListNode* prev, ListNode* head)
-	{
-		if (!head)
-			return prev;
-
-		ListNode* reverseHead = Recursively(head, head->next);
-		head->next = prev;
-		return reverseHead;
+		head = Recursively(mid, head, head->next);
+		mid->next = tail;
+		return head;
 	}
 
 	ListNode* reverseList_recur(ListNode* head) {
-		if (!head || !head->next)
-			return head;
-		return Recursively(nullptr, head);
-		//return Recursively(nullptr, head, head->next);
+		Recursively(nullptr, nullptr, head);
+		return head;
 	}
 };
