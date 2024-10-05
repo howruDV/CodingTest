@@ -1,5 +1,5 @@
 // LeetCode 024. Swap Nodes in Pairs
-// https://leetcode.com/problems/swap-nodes-in-pairs/description/
+// https://leetcode.com/problems/swap-nodes-in-pairs/
 
 struct ListNode
 {
@@ -11,60 +11,52 @@ struct ListNode
     ListNode(int x, ListNode* next) : val(x), next(next) {}
 };
 
-// try1: iteratively
-// - Time Complexity O(n)
-// - Space Complexity O(1)
-class Solution0 {
+// Time Complexity O(n)
+class Solution {
 public:
-    ListNode* swapPairs(ListNode* head) {
-        ListNode* node0 = head;
-        ListNode* node1 = nullptr;
+	// ==========
+	// (0) iter
+	// ==========
+	ListNode* swapPairs(ListNode* head) {
+		if (!head)
+			return nullptr;
 
-        // 0. point return head
-        if (head && node0->next)
-            head = node0->next;
+		ListNode* ans = new ListNode;
+		ListNode* last = ans;
 
-        // 1. swap two node
-        while (node0)
-        {
-            ListNode* lastNode = node1;
-            node1 = node0->next;
+		// 0. swap pair
+		while (head && head->next)
+		{
+			ListNode* Node0 = head;
+			ListNode* Node1 = head->next;
+			head = head->next->next;
 
-            // case: progress
-            if (node1)
-            {
-                if (lastNode)
-                    lastNode->next = node1;
-                node0->next = node1->next;
-                node1->next = node0;
+			last->next = Node1;
+			Node1->next = Node0;
+			Node0->next = head;
+			last = Node0;
+		}
 
-                node1 = node0; // save lastNode;
-                node0 = node0->next;
-            }
-            // case: endNode
-            else
-                break;
-        }
+		last->next = head;
 
-        return head;
-    }
-};
+		// 1. return
+		head = ans->next;
+		delete ans;
+		return head;
+	}
 
-// try2: recursively
-// - reverse each sections
-// - Time Complexity O(n)
-// - Space Complexity O(1)
-class Solution1 {
-public:
-    ListNode* swapPairs(ListNode* head) {
-        if (!head || !head->next)
-            return head;
+	// =============
+	// (1) recursion
+	// =============
+	ListNode* swapPairs_recur(ListNode* head) {
+		if (!head || !head->next)
+			return head;
 
-        ListNode* pairNode = head->next;
-        ListNode* next = pairNode->next;
-        pairNode->next = head;
+		ListNode* Pair = head->next;
+		ListNode* NextPair = head->next->next;
 
-        head->next = swapPairs(next);
-        return pairNode;
-    }
+		Pair->next = head;
+		head->next = swapPairs_recur(NextPair);
+		return Pair;
+	}
 };
