@@ -1,49 +1,77 @@
-// LeetCode 316. Remove Duplicate Letters
+// LeetCode 0316. Remove Duplicate Letters
 // https://leetcode.com/problems/remove-duplicate-letters/
 
-#include <vector>
 #include <string>
-using namespace std;
+#include <unordered_map>
+#include <set>
+using namespace::std;
 
-// Error: return되는 string 변수는 컴파일러가 string* type으로 선언함, idx 접근 방식이 다름
-// - Time Complexity O(n^2)
-// - Space Complexity O(n)
+// Time Complexity O(n)
 class Solution {
 public:
-    string removeDuplicateLetters(string s) {
-        struct charMap { bool bExist; int idx; };
-        charMap checkDup['z' - 'a' + 1] = {};
-        string strOut = "";
+	// ==========
+	// (1) Stack
+	// ==========
+	// Time Complexity O(n)
+	string removeDuplicateLetters(string s) {
+		string ans = "";
+		unordered_map<char, int> remainCount;
 
-        for (size_t i = 0; i < s.length(); ++i)
-        {
-            int charIdx = s[i] - 'a';
+		// 0. create count map
+		for (int i = 0; i < s.size(); ++i)
+		{
+			remainCount[s[i]]++;
+		}
 
-            // 0. case: first letter
-            if (!checkDup[charIdx].bExist)
-            {
-                checkDup[charIdx].bExist = true;
-                checkDup[charIdx].idx = strOut.size();
-                strOut += s[i];
-            }
-            // 1. case: deuplicate letter
-            else
-            {
-                int idx = checkDup[charIdx].idx;
+		// 1. make stack
+		for (int i = 0; i < s.size(); ++i)
+		{
+			remainCount[s[i]]--;
 
-                // 1.0. case: remove front letter
-                int a = strOut[idx + 1];
-                if (strOut[idx + 1] < s[i])
-                {
-                    strOut = strOut.substr(0, idx) + strOut.substr(idx + 1);
-                    checkDup[charIdx].idx = strOut.size();
-                    strOut += s[i];
-                }
-                // 1.1. case: remove back letter
-            }
-        }
+			if (ans.find(s[i]) != string::npos)
+				continue;
 
-        string ret = strOut;
-        return ret;
-    }
+			if (ans.empty() || s[i] > ans.back())
+			{
+				ans += s[i];
+			}
+			else
+			{
+				while (!ans.empty() && s[i] <= ans.back() && remainCount[ans.back()] != 0)
+				{
+					ans.pop_back();
+				}
+
+				ans += s[i];
+			}
+		}
+
+		return ans;
+	}
+
+	// ==============
+	// (2) Recursion
+	// ==============
+	// Time Complexity O(n)
+	string removeDuplicateLetters_recur(string s) {
+		if (s.size() <= 1)
+			return s;
+
+		set<char> Member(s.begin(), s.end());
+
+		for (char it : Member)
+		{
+			int Pos = s.find(it);
+			string SubStr = s.substr(Pos);
+			set<char> SubMember(SubStr.begin(), SubStr.end());
+
+			if (SubMember == Member)
+			{
+				SubStr.erase(remove(SubStr.begin(), SubStr.end(), it), SubStr.end());
+				return it + removeDuplicateLetters_recur(SubStr);
+			}
+		}
+
+		return "";
+	}
 };
