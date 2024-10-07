@@ -1,38 +1,39 @@
-// LeetCode 020. Valid Parentheses
+// LeetCode 0020. Valid Parentheses
 // https://leetcode.com/problems/valid-parentheses/
 
-#include <vector>
+#include <list>
 #include <string>
 using namespace::std;
 
-// - Time Complexity O(n)
-// - Space Complexity O(n)
+// Time Complexity O(n)
 class Solution {
 public:
-    bool isValid(string s) {
-        vector<char> vecBracket;
+	bool isValid(string s) {
+		list<char> stack;
 
-        // 0. explor string
-        for (size_t i = 0; i < s.length(); ++i)
-        {
-            // open brackets
-            if (s[i] == '(' || s[i] == '[' || s[i] == '{')
-                vecBracket.push_back(s[i]);
-            // close brackets
-            else if (s[i] == ')' || s[i] == ']' || s[i] == '}')
-            {
-                if (vecBracket.empty())
-                    return false;
+		for (int i = 0; i < s.length(); ++i)
+		{
+			if (s[i] == '(' || s[i] == '{' || s[i] == '[')
+			{
+				stack.push_back(s[i]);
+			}
+			else
+			{
+				if (stack.empty())
+					return false;
 
-                if (s[i] == ')' && vecBracket.back() == '('
-                    || s[i] == ']' && vecBracket.back() == '['
-                    || s[i] == '}' && vecBracket.back() == '{')
-                    vecBracket.pop_back();
-                else
-                    return false;
-            }
-        }
+				char stackPop = stack.back();
+				stack.pop_back();
 
-        return vecBracket.empty();
-    }
+				if (!((s[i] == ')' && stackPop == '(')
+					|| (s[i] == '}' && stackPop == '{')
+					|| (s[i] == ']' && stackPop == '[')))
+					return false;
+			}
+		}
+
+		if (stack.empty())
+			return true;
+		return false;
+	}
 };
