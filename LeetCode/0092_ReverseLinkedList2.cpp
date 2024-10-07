@@ -1,72 +1,56 @@
-// LeetCode 092. Reverse Linked List II
+// LeetCode 0092. Reverse Linked List II
 // https://leetcode.com/problems/reverse-linked-list-ii/
-// -The number of nodes in the list is n (1 <= n)
+// one pass
 
 struct ListNode
 {
-    int val;
-    ListNode* next;
+	int val;
+	ListNode* next;
 
-    ListNode() : val(0), next(nullptr) {}
-    ListNode(int x) : val(x), next(nullptr) {}
-    ListNode(int x, ListNode* next) : val(x), next(next) {}
+	ListNode() : val(0), next(nullptr) {}
+	ListNode(int x) : val(x), next(nullptr) {}
+	ListNode(int x, ListNode* next) : val(x), next(next) {}
 };
 
-// - Time Complexity O(n)
-// - Space Complexity O(1)
+// Time Complexity O(n)
 class Solution {
 public:
-    ListNode* reverse(ListNode** pphead, int len) {
-        ListNode* head = *pphead;
-        ListNode* mid = nullptr;
-        ListNode* tail = nullptr;
-        int i = 0;
+	ListNode* reverseBetween(ListNode* head, int left, int right) {
+		int count = 0;
+		ListNode* ans = new ListNode(0, head);
+		ListNode* reversePrev = nullptr;
+		ListNode* reverseStart = nullptr;
+		ListNode* prev = nullptr;
+		ListNode* mid = nullptr;
 
-        while (i < len)
-        {
-            tail = mid;
-            mid = head;
-            head = head->next;
+		head = ans;
+		while (head)
+		{
+			prev = mid;
+			mid = head;
+			head = head->next;
 
-            mid->next = tail;
-            ++i;
-        }
+			if (count == left)
+			{
+				reversePrev = prev;
+				reverseStart = mid;
+			}
+			else if (count > left && count < right)
+			{
+				mid->next = prev;
+			}
+			else if (count == right)
+			{
+				reversePrev->next = mid;
+				mid->next = prev;
+				reverseStart->next = head;
+			}
 
-        *pphead = mid;
-        return head;
-    }
+			count++;
+		}
 
-    ListNode* reverseBetween(ListNode* head, int left, int right) {
-        if (left == right)
-            return head;
-
-        ListNode* pNode = head;
-        ListNode* pLNode;
-        ListNode* pRNode;
-        for (int i = 0; pNode; ++i)
-        {
-            if (i == left - 2)
-                pLNode = pNode;
-            // 0. reverse section
-            else if (i == left - 1)
-            {
-                pRNode = reverse(&pNode, right - left + 1);
-
-                // link with left section
-                if (left == 1)
-                {
-                    head = pNode;
-                }
-                else
-                    pLNode->next = pNode;
-            }
-            // 1. after reverse, link with right section
-            else if (i == right - 1)
-                pNode->next = pRNode;
-
-            pNode = pNode->next;
-        }
-
-        return head;
-    }
+		head = ans->next;
+		delete ans;
+		return head;
+	}
 };

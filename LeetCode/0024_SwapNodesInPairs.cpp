@@ -1,4 +1,4 @@
-// LeetCode 024. Swap Nodes in Pairs
+// LeetCode 0024. Swap Nodes in Pairs
 // https://leetcode.com/problems/swap-nodes-in-pairs/
 
 struct ListNode
@@ -11,12 +11,12 @@ struct ListNode
     ListNode(int x, ListNode* next) : val(x), next(next) {}
 };
 
-// Time Complexity O(n)
 class Solution {
 public:
 	// ==========
 	// (0) iter
 	// ==========
+	// Time Complexity O(n)
 	ListNode* swapPairs(ListNode* head) {
 		if (!head)
 			return nullptr;
@@ -48,6 +48,7 @@ public:
 	// =============
 	// (1) recursion
 	// =============
+	// Time Complexity O(n)
 	ListNode* swapPairs_recur(ListNode* head) {
 		if (!head || !head->next)
 			return head;
