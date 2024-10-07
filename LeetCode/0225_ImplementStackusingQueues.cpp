@@ -1,8 +1,7 @@
 // LeetCode 0225. Implement Stack using Queues
 // https://leetcode.com/problems/implement-stack-using-queues/
-// using one queue;
+// using one queue
 
-#include <vector>
 #include <queue>
 using namespace std;
 
