@@ -52,7 +52,7 @@ public:
 	// ==============
 	// (2) Recursion
 	// ==============
-	// Time Complexity O(n)
+	// Time Complexity O(nlogn)
 	string removeDuplicateLetters_recur(string s) {
 		if (s.size() <= 1)
 			return s;
