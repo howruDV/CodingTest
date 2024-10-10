@@ -1,61 +1,89 @@
-// LeetCode 017. Letter Combinations of a Phone Number
+// LeetCode 0017. Letter Combinations of a Phone Number
 // https://leetcode.com/problems/letter-combinations-of-a-phone-number/
 
 #include <vector>
+#include <queue>
 #include <string>
 using namespace std;
 
-// - Time Complexity O(m^n)
-// - Space Complexity O(n)
 class Solution {
+private:
+	vector<string> mappingChar[10]{
+		vector<string>(),
+		vector<string>(),
+		vector<string>{"a","b","c"},
+		vector<string>{"d","e","f"},
+		vector<string>{"g","h","i"},
+		vector<string>{"j","k","l"},
+		vector<string>{"m","n","o"},
+		vector<string>{"p","q","r","s"},
+		vector<string>{"t","u","v"},
+		vector<string>{"w","x","y","z"},
+	};
+
 public:
+	// ==========
+	// (0) BFS
+	// ==========
+	vector<string> letterCombinations(string digits) {
+		if (digits.empty())
+			return vector<string>();
 
-    vector<vector<char>> Digit2Char = vector < vector<char>>
-    { vector<char>{'a', 'b', 'c'}
-        , vector<char>{'d', 'e', 'f'}
-        , vector<char>{'g', 'h', 'i'}
-        , vector<char>{'j', 'k', 'l'}
-        , vector<char>{'m', 'n', 'o'}
-        , vector<char>{'p', 'q', 'r', 's'}
-        , vector<char>{'t', 'u', 'v'}
-        , vector<char>{'w', 'x', 'y', 'z'}
-    };
+		deque<string> queue;
+		queue.push_back("");
 
-    vector<string> makeChar(vector<string>& v, int digit)
-    {
-        vector<string> newVec;
+		// bfs : 현재 가진 letter에 가능한 조합 더 붙여 완성
+		for (int i = 0; i < digits.size(); ++i)
+		{
+			deque<string> newStr;
+			int curNum = digits[i] - '0';
 
-        if (v.empty())
-        {
-            for (int j = 0; j < Digit2Char[digit - 2].size(); ++j)
-            {
-                string str;
-                str += Digit2Char[digit - 2][j];
-                newVec.push_back(str);
-            }
-        }
-        else
-        {
-            for (int i = 0; i < v.size(); ++i)
-            {
-                for (int j = 0; j < Digit2Char[digit - 2].size(); ++j)
-                    newVec.push_back(v[i] + Digit2Char[digit - 2][j]);
-            }
-        }
+			while (!queue.empty())
+			{
+				string curStr = queue.front();
+				queue.pop_front();
 
-        v.clear();
-        return newVec;
-    }
+				for (int j = 0; j < mappingChar[curNum].size(); ++j)
+				{
+					newStr.push_back(curStr + mappingChar[curNum][j]);
+				}
+			}
 
-    vector<string> letterCombinations(string digits) {
-        vector<string> ret;
+			queue = newStr;
+		}
 
-        // 0. per digits
-        for (int i = 0; i < digits.size(); ++i)
-        {
-            ret = makeChar(ret, digits[i] - '0');
-        }
+		return vector<string>(queue.begin(), queue.end());
+	}
 
-        return ret;
-    }
+	// ==========
+	// (1) DFS
+	// ==========
+	vector<string> ans;
+	string digits_g;
+
+	void dfs(int curIdx, string strPath)
+	{
+		if (curIdx >= digits_g.size())
+		{
+			ans.push_back(strPath);
+			return;
+		}
+
+		int CurNum = digits_g[curIdx] - '0';
+		curIdx++;
+
+		for (int i = 0; i < mappingChar[CurNum].size(); ++i)
+		{
+			dfs(curIdx, strPath + mappingChar[CurNum][i]);
+		}
+	}
+
+	vector<string> letterCombinations_dfs(string digits) {
+		if (digits.empty())
+			return ans;
+
+		digits_g = digits;
+		dfs(0, "");
+		return ans;
+	}
 };
