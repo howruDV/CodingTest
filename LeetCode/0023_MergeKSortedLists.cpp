@@ -1,4 +1,4 @@
-// LeetCode 023. Merge k Sorted Lists
+// LeetCode 0023. Merge k Sorted Lists
 // https://leetcode.com/problems/merge-k-sorted-lists/
 
 #include <vector>
@@ -12,38 +12,57 @@ struct ListNode {
     ListNode(int x, ListNode* next) : val(x), next(next) {}
 };
 
-// recursion ver
-// - Time Complexity O(n)
-// - Space Complexity O(1)
+// Time Complexity O(kn)
 class Solution {
 public:
-    ListNode* mergeTwoLists(ListNode* L1, ListNode* L2)
+    // Time Complexity : O(n)
+    ListNode* mergeTwoList(ListNode* list0, ListNode* list1)
     {
-        if (!L1)
-            return L2;
-        if (!L2)
-            return L1;
+        if (!list0)
+            return list1;
+        else if (!list1)
+            return list0;
 
-        if (L1->val < L2->val)
+        ListNode* ans = new ListNode();
+        ListNode* node1 = list0;
+        ListNode* node2 = list1;
+        list0 = ans;
+
+        while (node1 && node2)
         {
-            L1->next = mergeTwoLists(L1->next, L2);
-            return L1;
+            if (node1->val <= node2->val)
+            {
+                list0->next = node1;
+                node1 = node1->next;
+            }
+            else
+            {
+                list0->next = node2;
+                node2 = node2->next;
+            }
+
+            list0 = list0->next;
         }
-        else
+
+        if (node1 || node2)
         {
-            L2->next = mergeTwoLists(L1, L2->next);
-            return L2;
+            list0->next = node1 ? node1 : node2;
         }
+
+        list0 = ans->next;
+        delete ans;
+        return list0;
     }
 
+    // Time Complexity : O(kn)
     ListNode* mergeKLists(vector<ListNode*>& lists) {
-        if (lists.empty())
-            return nullptr;
+        ListNode* ans = nullptr;
 
-        ListNode* ret = lists[0];
-        for (int i = 1; i < lists.size(); ++i)
-            ret = mergeTwoLists(ret, lists[i]);
+        for (int i = 0; i < lists.size(); ++i)
+        {
+            ans = mergeTwoList(ans, lists[i]);
+        }
 
-        return ret;
+        return ans;
     }
 };
