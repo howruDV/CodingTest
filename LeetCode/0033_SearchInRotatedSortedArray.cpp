@@ -1,58 +1,47 @@
-// LeetCode 0033. Search in Rotated Sorted Array
-// https://leetcode.com/problems/binary-search/
-// O(log n) time complexity
+// Leetcode 0033. Search in Rotated Sorted Array
+// https://leetcode.com/problems/search-in-rotated-sorted-array/
+// Time Complexity O(logn)
+
 #include <vector>
 using namespace std;
 
-// ---------------------------------------------
-// When split arr in half, one side isn't rotated
-// - find next explore range using that arr
-// ---------------------------------------------
-// - Time Complexity O(log n)
-// - Space Complexity O(1)
+// Time Complexity O(logn)
 class Solution {
 public:
-    int search(vector<int>& nums, int target) {
-        int start = 0;
-        int end = nums.size() - 1;
-        int idx = nums.size() / 2;
+	int binSearch(const vector<int>& nums, const int& target, int left, int right)
+	{
+		if (left > right)
+			return -1;
 
-        while (start <= end)
-        {
-            // case: find target
-            if (nums[idx] == target) return idx;
-            
-            // case: left isn't rotated
-            if (nums[start] <= nums[idx])
-            {
-                if (nums[start] <= target && target < nums[idx])
-                {
-                    end = idx - 1;
-                    idx = end - (end - start + 1) / 2;
-                }
-                else
-                {
-                    start = idx + 1;
-                    idx = start + (end - start + 1) / 2;
-                }
-            }
+		int mid = left + (right - left) / 2;
 
-            // case: right isn't rotated
-            else
-            {
-                if (nums[idx] < target && target <= nums[end])
-                {
-                    start = idx + 1;
-                    idx = start + (end - start + 1) / 2;
-                }
-                else
-                {
-                    end = idx - 1;
-                    idx = end - (end - start + 1) / 2;
-                }
-            }
-        }
+		if (nums[mid] == target)
+			return mid;
 
-        return -1;
-    }
+		// 회전되지 않은 구간을 찾아 그쪽에 포함되는지 확인한다
+		// 아니라면 회전된 구간으로 넘긴다
+
+		// 오른쪽이 회전되지 않았다면
+		if (mid + 1 <= right && nums[mid + 1] <= nums[right])
+		{
+			if (nums[mid + 1] <= target && target <= nums[right])
+				return binSearch(nums, target, mid + 1, right);
+			else
+				return binSearch(nums, target, left, mid - 1);
+		}
+		// 왼쪽이 회전되지 않았다면
+		else if (mid - 1 >= left && nums[mid - 1] >= nums[left])
+		{
+			if (nums[left] <= target && target <= nums[mid - 1])
+				return binSearch(nums, target, left, mid - 1);
+			else
+				return binSearch(nums, target, mid + 1, right);
+		}
+
+		return -1;
+	}
+
+	int search(vector<int>& nums, int target) {
+		return binSearch(nums, target, 0, nums.size() - 1);
+	}
 };

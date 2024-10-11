@@ -1,34 +1,54 @@
-// LeetCode 0704. Binary Search
+// Leetcode 0704. Binary Search
 // https://leetcode.com/problems/binary-search/
-// O(log n) time complexity
+// Time Complexity O(logn)
+
 #include <vector>
 using namespace std;
 
-// - Time Complexity O(log n)
-// - Space Complexity O(1)
 class Solution {
 public:
-    int search(vector<int>& nums, int target) {
-        int start = 0;
-        int end = nums.size() - 1;
-        int idx = nums.size() / 2;
+    // =============
+    // (0) recursion
+    // =============
+    // Time Complexity O(logn)
+    int binSearch(vector<int>& nums, int target, int left, int right)
+    {
+        if (left > right)
+            return -1;
 
-        // 1. explore [start, end]
-        while (start <= end)
+        int mid = left + (right - left) / 2;
+
+        if (nums[mid] == target)
+            return mid;
+        else if (nums[mid] < target)
+            return binSearch(nums, target, mid + 1, right);
+        else
+            return binSearch(nums, target, left, mid - 1);
+    }
+
+    int search(vector<int>& nums, int target) {
+        return binSearch(nums, target, 0, nums.size() - 1);
+    }
+
+    // =============
+    // (1) iteration
+    // =============
+    // Time Complexity O(logn)
+    int search_iter(vector<int>& nums, int target) {
+        int left = 0;
+        int right = nums.size() - 1;
+        int mid = nums.size() / 2;
+
+        while (left < right)
         {
-            // case: find target
-            if (nums[idx] == target) return idx;
-            // case: explore
-            else if (nums[idx] < target)
-            {
-                start = idx + 1;
-                idx = start + (end - start + 1) / 2;
-            }
+            mid = left + (right - left) / 2;
+
+            if (nums[mid] == target)
+                return mid;
+            else if (nums[mid] < target)
+                left = mid + 1;
             else
-            {
-                end = idx - 1;
-                idx = end - (end - start + 1) / 2;
-            }
+                right = mid - 1;
         }
 
         return -1;

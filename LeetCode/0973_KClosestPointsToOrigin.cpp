@@ -1,39 +1,60 @@
-// LeetCode 0973. K Closest Points to Origin
+// Leetcode 0973. K Closest Points to Origin
 // https://leetcode.com/problems/k-closest-points-to-origin/
-#include <queue>
+
 #include <vector>
+#include <algorithm>
+#include <queue>
 using namespace std;
 
-// - Time Complexity O(n log k)
-// - Space Complexity O(k)
 class Solution {
 public:
-    vector<vector<int>> kClosest(vector<vector<int>>& points, int k) {
-        priority_queue<pair<int, vector<int>>> retHeap;
-        vector<vector<int>> ret;
+	// ===========
+	// (0) heap
+	// ===========
+	vector<vector<int>> kClosest(vector<vector<int>>& points, int k) {
+		priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> Dist; // dist, idx
 
-        // 1. calculate distance & update closest points
-        for (vector<int> it : points)
-        {
-            int dist = (it[0] * it[0] + it[1] * it[1]);
+		// 1. dist 기록
+		for (int i = 0; i < points.size(); ++i)
+		{
+			int distPow = points[i][0] * points[i][0] + points[i][1] * points[i][1];
+			Dist.push({ distPow, i });
+		}
 
-            if (retHeap.size() < k)
-                retHeap.emplace(dist, it);
-            else if (dist < retHeap.top().first)
-            {
-                retHeap.pop();
-                retHeap.emplace(dist, it);
-            }
-        }
+		// 2. find K closest
+		vector<vector<int>> ans;
 
-        // 2. convert to vector
-        for (int i = 0; i < k; i++)
-        {
-            vector<int> vec = retHeap.top().second;
-            retHeap.pop();
-            ret.push_back(vec);
-        }
+		for (int i = 0; i < k; ++i)
+		{
+			ans.push_back(points[Dist.top().second]);
+			Dist.pop();
+		}
 
-        return ret;
-    }
+		return ans;
+	}
+
+	// ===========
+	// (0) heap
+	// ===========
+	vector<vector<int>> kClosest(vector<vector<int>>& points, int k) {
+		vector<pair<int, int>> Dist; // dist, idx
+
+		// 1. dist 기록
+		for (int i = 0; i < points.size(); ++i)
+		{
+			int distPow = points[i][0] * points[i][0] + points[i][1] * points[i][1];
+			Dist.push_back({ distPow, i });
+		}
+
+		// 2. find K closest
+		sort(Dist.begin(), Dist.end());
+		vector<vector<int>> ans;
+
+		for (int i = 0; i < k; ++i)
+		{
+			ans.push_back(points[Dist[i].second]);
+		}
+
+		return ans;
+	}
 };

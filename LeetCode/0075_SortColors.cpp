@@ -1,53 +1,43 @@
-// LeetCode 0075. Sort Colors
-// https://leetcode.com/problems/sort-colors/
-// - in-place
+// Leetcode 0075. Sort Colors
+// https://leetcode.com/problems/sort-colors/description/
+// Space Complexity O(1)
+// one pass
+
 #include <vector>
 using namespace std;
 
-// ---------------------------------------------
-// Sorting while Exploring
-// - [0, redEnd]            : grouped(0)
-// - [redEnd+1, blueHead-1] : unsorted (finally group 1)
-// - [blueHead, n-1]        : groupded(1)
-// ---------------------------------------------
-// - Time Complexity O(n)
-// - Space Complexity O(1)
 class Solution {
 public:
     void sortColors(vector<int>& nums) {
-        if (nums.size() == 1) return;
-        int cur = 0;
-        int redEnd = -1;
-        int blueHead = nums.size();
+        int curNode = 0;
+        int color0Head = 0;
+        int color2Head = nums.size() - 1;
 
-        // 1. explore colors
-        while (cur < blueHead)
+        while (curNode <= color2Head)
         {
-            // case: find 0 (do exchange)
-            if (nums[cur] == 0)
+            switch (nums[curNode])
             {
-                if (cur == redEnd)  // escape exchange
-                {
-                    cur++;
-                    continue;
-                }
-
-                swap(nums[cur], nums[++redEnd]);
-            }
-            // case: find 2 (do exchange)
-            else if (nums[cur] == 2)
+            case 0:
             {
-                if (cur == blueHead) // escape exchange
-                {
-                    cur--;
-                    continue;
-                }
-
-                swap(nums[cur], nums[--blueHead]);
+                nums[curNode] = nums[color0Head];
+                nums[color0Head] = 0;
+                color0Head++;
+                curNode++;
             }
-            // case: find 1 (nothing)
-            else
-                cur++;
+            break;
+            case 1:
+            {
+                curNode++;
+            }
+            break;
+            case 2:
+            {
+                nums[curNode] = nums[color2Head];
+                nums[color2Head] = 2;
+                color2Head--;
+            }
+            break;
+            }
         }
     }
 };

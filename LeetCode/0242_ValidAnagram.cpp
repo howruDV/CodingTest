@@ -1,44 +1,63 @@
-// LeetCode 0242. Valid Anagram
+// Leetcode 0242. Valid Anagram
 // https://leetcode.com/problems/valid-anagram/
-// - Consider char & Unicode characters
+
 #include <string>
 #include <unordered_map>
+#include <algorithm>
 using namespace std;
 
-// - Time Complexity O(n)
-// - Space Complexity O(n)
 class Solution {
 public:
+    // =====================
+    // (0) Hash
+    // =====================
+    // Time Complexity O(n)
     bool isAnagram(string s, string t) {
-        if (s == t || s.length() != t.length()) return false;
-        unordered_map<char, int> countMap;
+        if (s.length() != t.length())
+            return false;
 
-        // 1. count characters
-        for (char it : s)
-        {
-            unordered_map<char, int>::iterator iter = countMap.find(it);
-            if (iter != countMap.end())
-                iter->second++;
-            else
-                countMap.insert({ it, 1 });
-        }
+        unordered_map<char, int> Hash;
 
-        // 2. check characters
-        for (char it : t)
+        // 1. 기록
+        for (int i = 0; i < s.length(); ++i)
         {
-            unordered_map<char, int>::iterator iter = countMap.find(it);
-            if (iter == countMap.end())
-                return false;
+            // s 기록
+            if (Hash.find(s[i]) == Hash.end())
+            {
+                Hash[s[i]] = 1;
+            }
             else
             {
-                iter->second--;
-                if (iter->second == 0)
-                    countMap.erase(iter);
+                Hash[s[i]]++;
+            }
+
+            // t 기록
+            if (Hash.find(t[i]) == Hash.end())
+            {
+                Hash[t[i]] = -1;
+            }
+            else
+            {
+                Hash[t[i]]--;
             }
         }
 
-        if (countMap.empty())
-            return true;
-        return false;
+        // 2. anagram check
+        for (auto& it : Hash)
+        {
+            if (it.second != 0)
+                return false;
+        }
+        return true;
+    }
+
+    // =====================
+    // (1) sort
+    // =====================
+    // Time Complexity O(nlogn)
+    bool isAnagram_sort(string s, string t) {
+        sort(s.begin(), s.end());
+        sort(t.begin(), t.end());
+        return s == t;
     }
 };

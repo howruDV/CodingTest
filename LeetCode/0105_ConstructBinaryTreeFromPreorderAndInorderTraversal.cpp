@@ -1,6 +1,9 @@
-// LeetCode 105. Construct Binary Tree from Preorder and Inorder Traversal
+// Leetcode 0105. Construct Binary Tree from Preorder and Inorder Traversal
 // https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/
+
 #include <vector>
+#include <set>
+#include <unordered_map>
 using namespace std;
 
 struct TreeNode {
@@ -12,33 +15,42 @@ struct TreeNode {
 	TreeNode(int x, TreeNode* left, TreeNode* right) : val(x), left(left), right(right) {}
 };
 
-// idea: preorder의 첫번째 값 = root node
-// - root는 inorder의 범위를 쪼갤 수 있음
-// Time Complexity O(n^2)
-// Space Complexity O(n^2)
 class Solution {
-private:
-	TreeNode* SplitedTree(vector<int>& preorder, vector<int> inorder, int& preIdx)
-	{
-		// trivial case:
-		if (inorder.empty())
-			return nullptr;
-
-		// 1. find root idx & preorder progress
-		int splitIdx = find(inorder.begin(), inorder.end(), preorder[preIdx++]) - inorder.begin();
-		TreeNode* node = new TreeNode(inorder[splitIdx]);
-
-		// 2. compose childs
-		node->left = SplitedTree(preorder, vector<int>(inorder.begin(), inorder.begin()+splitIdx), preIdx);
-		node->right = SplitedTree(preorder, vector<int>(inorder.begin()+splitIdx+1, inorder.end()), preIdx);
-
-		return node;
-	}
-
 public:
-	TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+	unordered_map<int, int> InorderIdx;
 
-		int preIdx = 0;
-		return SplitedTree(preorder, inorder, preIdx);
+	TreeNode* exportRoot(vector<int>& preorder, vector<int>& inorder, int PreStart, int PreEnd) {
+		if (PreStart > PreEnd)
+			return nullptr;
+		else if (PreStart == PreEnd)
+			return new TreeNode(preorder[PreStart]);
+
+		TreeNode* root = new TreeNode(preorder[PreStart]);
+
+		// Preoreder 에서 Right Child의 시작 Idx 찾음
+		int RightPreIdx = PreStart + 1;
+		for (; RightPreIdx < preorder.size(); ++RightPreIdx)
+		{
+			if (InorderIdx[preorder[RightPreIdx]] > InorderIdx[root->val])
+			{
+				break;
+			}
+		}
+
+		// 재귀
+		root->left = exportRoot(preorder, inorder, PreStart + 1, RightPreIdx - 1);
+		root->right = exportRoot(preorder, inorder, RightPreIdx, PreEnd);
+
+		return root;
+	}
+	
+	TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+		// Inorder Idx 기록
+		for (int i = 0; i < inorder.size(); ++i)
+		{
+			InorderIdx[inorder[i]] = i;
+		}
+
+		return exportRoot(preorder, inorder, 0, preorder.size()-1);
 	}
 };

@@ -1,73 +1,62 @@
-// LeetCode 743. Network Delay Time
+// Leetcode 0743. Network Delay Time
 // https://leetcode.com/problems/network-delay-time/
+
 #include <vector>
 #include <queue>
 using namespace std;
 
-// Dijkstra Algo
-// - Time Complexity O(NlogN)
-
-/// [TimeError]: 
-/// dist를 update하는 경우를 판단하기 전,
-/// continue 판단을 따로 해주지 않아도 (조건문 통과하지 못하므로) Time Compolexity가 비슷할 것이라 생각했으나
-/// time limit 발생함
-/// note: DFS는 flow 분기 처리 반드시 따로 해줘야 할 것처럼 보임
-
 class Solution {
 public:
-    int networkDelayTime(vector<vector<int>>& times, int n, int k) {
-        priority_queue<pair<int, int>> queue;
-        vector<vector<pair<int, int>>> graph(n); // <<node, cost>>
-        vector<int> dist(n, -1); // init: -1 (infinity)
+	int networkDelayTime(vector<vector<int>>& times, int n, int k) {
+		int ans = -1;
+		vector<int> Weight(n + 1, -1);
+		vector<vector<pair<int, int>>> EdgeTo(n + 1);
+		// priority queue : 최우선순위 업데이트 값부터 확인해 ㅡ 쓸모 없는 연산을 줄이려는 목적
+		priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> Queue;
 
-        // graph
-        for (size_t i = 0; i < times.size(); ++i)
-        {
-            int nodei = times[i][0] - 1;
-            int nodej = times[i][1] - 1;
-            int time = times[i][2];
+		// create EdgeTo
+		for (int i = 0; i < times.size(); ++i)
+		{
+			vector<int>& curNetwork = times[i];
+			EdgeTo[curNetwork[0]].push_back({ curNetwork[1], curNetwork[2] });
+		}
 
-            graph[nodei].push_back(make_pair(nodej, time));
-        }
+		// 확산 : 현재노드로부터 진행가능한 간선의 가중치값 업데이트 (새로 업데이트되는 경우 다시 검사)
+		Weight[k] = 0;
+		Queue.push({ 0, k });
 
-        // 0. start node
-        dist[k - 1] = 0;
-        queue.push(make_pair(k - 1, 0));
+		while (!Queue.empty())
+		{
+			int NodeWeight = Queue.top().first;
+			int NodeIdx = Queue.top().second;
+			Queue.pop();
 
-        // 1. explore
-        while (!queue.empty())
-        {
-            int curNode = queue.top().first;
-            int curDist = queue.top().second;
-            queue.pop();
+			// 최소 Weight가 이미 업데이트 됐다면
+			if (NodeWeight > Weight[NodeIdx])
+				continue;
 
-            if (curDist > dist[curNode] && dist[curNode] != -1) continue;
-            // case: update dist
-            else if (curDist <= dist[curNode] || dist[curNode] == -1)
-            {
-                dist[curNode] = curDist;
-                for (size_t i = 0; i < graph[curNode].size(); ++i)
-                {
-                    int v = graph[curNode][i].first;
-                    int d = graph[curNode][i].second + curDist;
-                    if (d < dist[v] || dist[v] == -1)
-                    {
-                        queue.push(make_pair(v, d));
-                        dist[v] = d;
-                    }
-                }
-            }
-        }
+			for (int i = 0; i < EdgeTo[NodeIdx].size(); ++i)
+			{
+				int NodeTo = EdgeTo[NodeIdx][i].first;
+				int NewWeight = EdgeTo[NodeIdx][i].second + NodeWeight;
 
-        // 2. return
-        int ret = -1;
-        for (int i : dist)
-        {
-            if (i == -1)
-                return -1;
-            if (ret < i)
-                ret = i;
-        }
-        return ret;
-    }
+				// Weight가 더 적은 경우 가중치 업데이트
+				if (Weight[NodeTo] < 0 || NewWeight < Weight[NodeTo])
+				{
+					Weight[NodeTo] = NewWeight;
+					Queue.push({ NewWeight, NodeTo });
+				}
+			}
+		}
+
+		for (int i = 1; i < Weight.size(); ++i)
+		{
+			if (Weight[i] < 0)
+				return -1;
+
+			ans = max(ans, Weight[i]);
+		}
+
+		return ans;
+	}
 };

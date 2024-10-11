@@ -1,76 +1,68 @@
-// LeetCode 0148. Sort List
+// Leetcode 0148. Sort List
 // https://leetcode.com/problems/sort-list/
-// O(n logn) time
-// O(1) memory
+// Time Complexity O(nlogn)
+// Space Complexity O(1)
 
 struct ListNode {
-	int val;
-	ListNode* next;
-	ListNode() : val(0), next(nullptr) {}
-	ListNode(int x) : val(x), next(nullptr) {}
-	ListNode(int x, ListNode* next) : val(x), next(next) {}
-	
+    int val;
+    ListNode *next;
+    ListNode() : val(0), next(nullptr) {}
+    ListNode(int x) : val(x), next(nullptr) {}
+    ListNode(int x, ListNode *next) : val(x), next(next) {}
 };
 
-// Merge Sort
-// Time Complexity O(nlog(n))
-// Space Complexity O(n)
+// Time Complexity O(nlogn)
 class Solution {
-private:
-	ListNode* MergeSort(ListNode* start)
-	{
-		if (!start) return nullptr;
-		else if (!start->next) return start;
-
-		// 0. find mid node
-		ListNode* mid = start;
-		ListNode* tmp = start->next;
-		while (tmp && tmp->next)
-		{
-			mid = mid->next;
-			tmp = tmp->next->next;
-		}
-
-		// 1. divide
-		tmp = mid->next;
-		mid->next = nullptr;
-		ListNode* sortL = MergeSort(start);
-		ListNode* sortR = MergeSort(tmp);
-
-		// 2. conqure
-		// head node
-		ListNode* retHead;
-		ListNode* ret = new ListNode(-1);
-		retHead = ret;
-
-		// ascend order
-		while (sortL && sortR)
-		{
-			if (sortL->val < sortR->val)
-			{
-				ret->next = sortL;
-				sortL = sortL->next;
-			}
-			else
-			{
-				ret->next = sortR;
-				sortR = sortR->next;
-			}
-			ret = ret->next;
-		}
-		if (sortL)
-			ret->next = sortL;
-		else if (sortR)
-			ret->next = sortR;
-
-		ret = retHead->next;
-		delete(retHead);
-		return ret;
-	}
-
 public:
-	ListNode* sortList(ListNode* head) {
-		if (!head) return nullptr;
-		return MergeSort(head);
-	}
+    ListNode* merge(ListNode* list1, ListNode* list2)
+    {
+        if (!list1) return list2;
+        if (!list2) return list1;
+
+        ListNode ans(0);
+        ListNode* last = &ans;
+
+        while (list1 && list2)
+        {
+            if (list1->val < list2->val)
+            {
+                last->next = list1;
+                list1 = list1->next;
+            }
+            else
+            {
+                last->next = list2;
+                list2 = list2->next;
+            }
+
+            last = last->next;
+        }
+
+        last->next = list1 ? list1 : list2;
+        return ans.next;
+    }
+
+    ListNode* sortList(ListNode* head) {
+        if (!head || !head->next)
+            return head;
+
+        // 1. ÂÉ°·
+        ListNode* prev = nullptr;
+        ListNode* mid = head;
+        ListNode* fast = head;
+
+        while (fast && fast->next)
+        {
+            prev = mid;
+            mid = mid->next;
+            fast = fast->next->next;
+        }
+
+        prev->next = nullptr;
+        head = sortList(head);
+        mid = sortList(mid);
+
+        // 2. ÇÕÄ§
+        return merge(head, mid);
+    }
 };
