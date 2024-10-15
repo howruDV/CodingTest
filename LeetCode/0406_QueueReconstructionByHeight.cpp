@@ -1,73 +1,81 @@
-// LeetCode 0406. Queue Reconstruction by Height
+// Leetcode 0406. Queue Reconstruction by Height
 // https://leetcode.com/problems/queue-reconstruction-by-height/
+
 #include <vector>
 #include <algorithm>
+#include <queue>
 using namespace std;
 
-// ----------------------------------
-// idea: insert people by height order
-// record current remaining front idx
-// ----------------------------------
-// - Time Complexity O(n^2)
-// - Space Complexity O(n)
-class Solution0 {
+class Solution {
 public:
-    vector<vector<int>> reconstructQueue(vector<vector<int>>& people) {
-        vector<vector<int>> ret(people.size());
-        int curHeight = -1;
-        int remainFront = 0;
-        sort(people.begin(), people.end());
+    // =============================
+    // (0) 키가 작은 순으로 위치 고정
+    // =============================
+    // Time Complexity O(nlogn)
+    void pushQueue(const vector<int>& people, vector<vector<int>>& outQueue)
+    {
+        int height = people[0];
+        int spaceCount = people[1];
 
-        // 1. insert people by height order
-        for (vector<int> it : people)
+        for (int i = 0; i < outQueue.size(); ++i)
         {
-            // 2. check current height
-            if (curHeight != it[0])
+            if (!outQueue[i].empty())
             {
-                curHeight = it[0];
-                while (!ret[remainFront].empty())
-                    remainFront++;
-            }
-
-            // case: insert not front
-            // - check if other people is in front
-            int check = 0;
-            if (it[1] != 0)
-            {
-                for (int i = 1; i <= it[1]; ++i)
+                if (outQueue[i][0] == height)
                 {
-                    while (!ret[i + remainFront + check].empty() && ret[i + remainFront + check][0] != curHeight)
-                        check++;
+                    spaceCount--;
                 }
+
+                continue;
             }
 
-            ret[it[1] + remainFront + check] = it;
+            if (spaceCount > 0)
+            {
+                spaceCount--;
+                continue;
+            }
+
+            outQueue[i] = people;
+            break;
+        }
+    }
+
+    vector<vector<int>> reconstructQueue(vector<vector<int>>& people) {
+        vector<vector<int>> ans(people.size());
+        sort(people.begin(), people.end());
+        
+        for (int i = 0; i < people.size(); ++i)
+        {
+            pushQueue(people[i], ans);
         }
 
-        return ret;
-    }
-};
-
-// - Time Complexity O(n^2)
-// - Space Complexity O(n)
-class Solution1 {
-private:
-    static bool cmp(const vector<int>& a, const vector<int>& b)
-    {
-        if (a[0] == b[0]) return b[1] > a[1];
-        return a[0] > b[0];
+        return ans;
     }
 
-public:
-    vector<vector<int>> reconstructQueue(vector<vector<int>>& people) {
-        vector<vector<int>> ret;
-        sort(people.begin(), people.end(), cmp);
+    // =============================
+    // (1) 키가 큰 순으로 삽입
+    // =============================
+    // Time Complexity O(nlogn)
+    struct Comp {
+        bool operator()(const vector<int>& a, const vector<int>& b)
+        {
+            if (a[0] == b[0])
+                return a[1] > b[1];
+            return a[0] < b[0];
+        }
+    };
 
-        // 1. insert dec order
-        // - as a result, when same priority, lower height insert in front of higher height 
-        for (vector<int> it : people)
-            ret.insert(ret.begin() + it[1], it);
+    vector<vector<int>> reconstructQueue_bigOrder(vector<vector<int>>& people) {
+        vector<vector<int>> ans;
+        priority_queue<vector<int>, vector<vector<int>>, Solution::Comp> maxHeap (people.begin(), people.end());
+        
+        while (!maxHeap.empty())
+        {
+            int frontSpace = maxHeap.top()[1];
+            ans.insert(ans.begin() + frontSpace, maxHeap.top());
+            maxHeap.pop();
+        }
 
-        return ret;
+        return ans;
     }
 };
