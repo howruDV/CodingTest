@@ -1,22 +1,37 @@
-// LeetCode 0169. Majority Element
-// https://leetcode.com/problems/majority-element/description/
+// Leetcode 0169. Majority Element
+// https://leetcode.com/problems/majority-element/
+
+// Time Complexity O(n)
+// Space Complexity O(1)
+
 #include <vector>
-#include <unordered_map>
+#include <vector>
 using namespace std;
 
-// - Time Complexity O(n)
-// - Space Complexity O(n)
 class Solution {
 public:
     int majorityElement(vector<int>& nums) {
-        unordered_map<int, int> numRec; // num, count
+        int ans = nums[0];
+        int count = 1;
 
-        for (int it : nums)
+        for (int i = 1; i < nums.size(); ++i)
         {
-            if (++numRec[it] > nums.size() / 2)
-                return it;
+            if (nums[i] == ans)
+            {
+                count++;
+            }
+            else
+            {
+                count--;
+
+                if (count <= 0)
+                {
+                    ans = nums[i];
+                    count = 1;
+                }
+            }
         }
 
-        return -1;
+        return ans;
     }
 };

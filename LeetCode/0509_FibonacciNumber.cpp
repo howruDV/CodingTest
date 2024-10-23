@@ -1,65 +1,32 @@
-// LeetCode 0169. Majority Element
-// https://leetcode.com/problems/majority-element/description/
-#include <vector>
-using namespace std;
+// Leetcode 0509. Fibonacci Number
+//https://leetcode.com/problems/fibonacci-number/
 
-// -----------------------------
-// recursion
-// -----------------------------
-// - Time Complexity O(2^n)
-// - Space Complexity O(2^n)
-class Solution0 {
+class Solution {
 public:
+    int DP[31];
+
+    // =================
+    // (0) Memorization
+    // =================
     int fib(int n) {
-        if (n <= 1)
-            return n;
-        return fib(n - 1) + fib(n - 2);
+        if (n == 0) return 0;
+        if (n == 1) return 1;
+        if (DP[n] != 0) return DP[n];
+
+        DP[n] = fib(n - 1) + fib(n - 2);
+        return DP[n];
     }
-};
-
-// -----------------------------
-// Tabluation, Bottom-Up
-// -----------------------------
-// - Time Complexity O(n)
-// - Space Complexity O(n)
-class Solution1 {
-public:
-    int fib(int n) {
-        vector<int> dp(n + 1, -1);
-        
-        for (int i = 0; i <= n; ++i)
+    
+    // =================
+    // (1) Tabulation
+    // =================
+    int fib_Tabulation(int n) {
+        DP[1] = 1;
+        for (int i = 2; i <= n; ++i)
         {
-            if (i <= 1)
-                dp[i] = i;
-            else
-                dp[i] = dp[i - 1] + dp[i - 2];
+            DP[i] = DP[i - 1] + DP[i - 2];
         }
 
-        return dp[n];
-    }
-};
-
-// -----------------------------
-// Memoization, Top-Down
-// -----------------------------
-// - Time Complexity O(n)
-// - Space Complexity O(n)
-class Solution2 {
-private:
-    int dp[31] = { 0, };
-
-public:
-    int fib(int n) {
-        if (n <= 1)
-        {
-            dp[n] = n;
-            return n;
-        }
-
-        if (dp[n] != 0)
-            return dp[n];
-        
-        dp[n] = fib(n - 1) + fib(n - 2);
-        return dp[n];
+        return DP[n];
     }
 };
