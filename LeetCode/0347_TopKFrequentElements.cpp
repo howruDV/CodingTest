@@ -1,79 +1,39 @@
-// LeetCode 347. Top K Frequent Elements
+// Leetcode 0347. Top K Frequent Elements
 // https://leetcode.com/problems/top-k-frequent-elements/
-// - time complexity must be better than O(n log n)
+// Time Complexity O(nlogn)
 
 #include <vector>
-#include <unordered_map>
 #include <queue>
-#include <algorithm>
+#include <unordered_map>
 using namespace std;
 
-// maxHeap by vector ver
-// - Time Complexity O(nlogn)
-// - Space Complexity O(n)
-class Solution0 {
+// Time Complexity O(nlogn)
+class Solution {
 public:
     vector<int> topKFrequent(vector<int>& nums, int k) {
-        unordered_map<int, int> numCount;
-        vector<pair<int, int>> heap;
-        vector<int> ret;
+        unordered_map<int, int> numCount;   // num, count
 
-        // 0. explore nums
-        for (vector<int>::iterator iter = nums.begin(); iter != nums.end(); ++iter)
+        // 1. create unorderd map
+        for (int num : nums)
         {
-            unordered_map<int, int>::iterator mapIter = numCount.find(*iter);
-
-            // case: none exist
-            if (mapIter == numCount.end())
-                numCount.insert(make_pair(*iter, 1));
-            // case: already exist
-            else
-                mapIter->second++;
+            numCount[num]++;
         }
 
-        // 1. find desc order
-        // 1.0. make heap vector
-        for (unordered_map<int, int>::iterator iter = numCount.begin(); iter != numCount.end(); ++iter)
-            heap.push_back(make_pair(iter->second, iter->first));
-        make_heap(heap.begin(), heap.end());
+        // 2. sort
+        vector<int> ans;
+        priority_queue<pair<int, int>, vector<pair<int, int>>, less<>> pq;
 
-        // 1.1. maxheap
-        for (int i = 0; i < k; ++i)
+        for (pair<int, int> it : numCount)
         {
-            pop_heap(heap.begin(), heap.end());
-            ret.push_back(heap.back().second);
-            heap.pop_back();
+            pq.push({ it.second, it.first });   // count, num
         }
-
-        return ret;
-    }
-};
-
-// maxHeap by priority_queue ver
-// priority_queue: STL container that use HEAP structure
-// - Time Complexity O(nlogn)
-// - Space Complexity O(n)
-class Solution1 {
-public:
-    vector<int> topKFrequent(vector<int>& nums, int k) {
-        unordered_map<int, int> numCount;
-        priority_queue<pair<int, int>> heap;
-        vector<int> ret;
-
-        // 0. count nums
-        for (vector<int>::iterator iter = nums.begin(); iter != nums.end(); ++iter)
-            numCount[*iter]++;
-
-        // 1. find desc order
-        for (unordered_map<int, int>::iterator iter = numCount.begin(); iter != numCount.end(); ++iter)
-            heap.push(make_pair(iter->second, iter->first));
 
         for (int i = 0; i < k; ++i)
         {
-            ret.push_back(heap.top().second);
-            heap.pop();
+            ans.push_back(pq.top().second); // num
+            pq.pop();
         }
 
-        return ret;
+        return ans;
     }
 };
