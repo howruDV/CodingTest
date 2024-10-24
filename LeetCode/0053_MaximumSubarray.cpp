@@ -1,27 +1,35 @@
-// LeetCode 0053. Maximum Subarray
+// Leetcode 0053. Maximum Subarray
 // https://leetcode.com/problems/maximum-subarray/
+
+#include <minmax.h>
 #include <vector>
+#include <minmax.h>
 using namespace std;
 
-// - Time Complexity O(n)
-// - Space Complexity O(1)
 class Solution {
 public:
+    // =============
+    // (1) algorithm
+    // =============
+    // Time Complexity O(n)
     int maxSubArray(vector<int>& nums) {
-        int maxSum = nums[0];
-        int curSum = nums[0];
-
-        // 1. explore nums
+        int sub = nums[0];
+        int ans = nums[0];
+        
         for (int i = 1; i < nums.size(); ++i)
         {
-            // 2. sum current sub array
-            if (curSum < 0)
-                curSum = nums[i];
+            if (sub <= 0)
+            {
+                sub = nums[i];
+            }
             else
-                curSum += nums[i];
+            {
+                sub += nums[i];
+            }
             
-            maxSum = max(maxSum, curSum);
+            ans = max(ans, sub);
         }
-        return maxSum;
+
+        return ans;
     }
 };

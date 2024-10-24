@@ -1,19 +1,21 @@
-// LeetCode 0023. Merge k Sorted Lists
-// https://leetcode.com/problems/merge-k-sorted-lists/
-
-#include <vector>
+#include <queue>
 using namespace std;
+#include <vector>
+
 
 struct ListNode {
     int val;
-    ListNode* next;
+    ListNode *next;
     ListNode() : val(0), next(nullptr) {}
     ListNode(int x) : val(x), next(nullptr) {}
-    ListNode(int x, ListNode* next) : val(x), next(next) {}
+    ListNode(int x, ListNode *next) : val(x), next(next) {}
 };
 
+// =====================
+// (0) Merge each List
+// =====================
 // Time Complexity O(kn)
-class Solution {
+class Solution0 {
 public:
     // Time Complexity : O(n)
     ListNode* mergeTwoList(ListNode* list0, ListNode* list1)
@@ -64,5 +66,47 @@ public:
         }
 
         return ans;
+    }
+};
+
+// =====================
+// (1) Priority Queue
+// =====================
+// Time Complexity O(nlogn)
+class Solution {
+public:
+    ListNode* mergeKLists(vector<ListNode*>& lists) {
+        if (lists.empty())
+            return nullptr;
+
+        priority_queue<pair<int, ListNode*>, vector<pair<int, ListNode*>>, greater<>> pq;
+        
+        for (int i = 0; i < lists.size(); ++i)
+        {
+            ListNode* next = lists[i];
+
+            while (next)
+            {
+                pq.push({ next->val, next });
+                next = next->next;
+            }
+        }
+
+        ListNode* ans = new ListNode;
+        ListNode* curNode = ans;
+
+        while (!pq.empty())
+        {
+            ListNode* nextNode = pq.top().second;
+            pq.pop();
+
+            curNode->next = nextNode;
+            nextNode->next = nullptr;
+            curNode = nextNode;
+        }
+
+        curNode = ans->next;
+        delete ans;
+        return curNode;
     }
 };
