@@ -1,66 +1,51 @@
-// LeetCode 0332. Reconstruct Itinerary
+// Leetcode 0332. Reconstruct Itinerary
 // https://leetcode.com/problems/reconstruct-itinerary/
 
 #include <vector>
-#include <queue>
 #include <unordered_map>
+#include <queue>
+#include <set>
 #include <string>
+#include <algorithm>
 using namespace std;
 
 class Solution {
 public:
-	vector<string> ans;
-	unordered_map<string, vector<string>> graph;
-	unordered_map<string, int> visitRemain;
-
-	void dfs(const string& curPos, vector<string>& path)
+	// Idea : 현재 방문한 노드는 확정된 다음 방문 경로의 앞부분임
+	// 재귀 종료 조건 : 더이상 dfs를 돌 수 없는 곳은 현재 방문 가능한 가장 마지막 노드
+	void dfs(string current, unordered_map<string, deque<string>>& graph, vector<string>& path)
 	{
-		if (!ans.empty() || visitRemain[curPos] || path.size() > visitRemain.size())
-			return;
-
-		// 방문처리
-		visitRemain[curPos] = true;
-		path.push_back(curPos);
-
-		if (path.size() == visitRemain.size())
+		while (!graph[current].empty())
 		{
-			ans = path;
-			return;
+			string next = graph[current].front();
+			graph[current].pop_front();
+			dfs(next, graph, path);
 		}
 
-		// 다른 곳으로 이동
-		for (int i = 0; i < graph[curPos].size(); ++i)
-		{
-			dfs(graph[curPos][i], path);
-		}
-
-		visitRemain[curPos] = false;
-		path.pop_back();
+		path.push_back(current);
 	}
 
 	vector<string> findItinerary(vector<vector<string>>& tickets) {
-		// 1. create graph
+		// 0. Graph 구성
+		unordered_map<string, deque<string>> Graph;
+		set<string> Keys;
+
 		for (vector<string> ticket : tickets)
 		{
-			graph[ticket.front()].push_back(ticket.back());
-			visitRemain[ticket.front()]++;
-			visitRemain[ticket.back()]++;
+			Keys.insert(ticket[0]);
+			Graph[ticket[0]].push_back(ticket[1]);
 		}
 
-		// 2. dfs
-		vector<string> keys;
+		for (string key : Keys)
+		{
+			sort(Graph[key].begin(), Graph[key].end());
+		}
+
+		// 1. Itinerary 찾음
 		vector<string> path;
+		dfs("JFK", Graph, path);
 
-		for (const auto& pair : visitRemain)
-		{
-			keys.push_back(pair.first);
-		}
-
-		for (int i = 0; i < keys.size(); ++i)
-		{
-			dfs(keys[i], path);
-		}
-
-		return ans;
+		reverse(path.begin(), path.end());
+		return path;
 	}
 };

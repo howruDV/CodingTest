@@ -1,60 +1,54 @@
-// LeetCode 787. Cheapest Flights Within K Stops
+// Leetcode 0787. Cheapest Flights Within K Stops
 // https://leetcode.com/problems/cheapest-flights-within-k-stops/
+
 #include <vector>
 #include <queue>
-#include <minmax.h>
 using namespace std;
 
-// Time Complexity O(E)
+// main Idea : dijkstra 알고리즘을 활용
+// (queue에 가능한 경우를 모두 넣어 처리하는 식)
 class Solution {
-
-private:
-    struct cmp
-    {
-        bool operator()(const pair<int, pair<int, int>>& a, const pair<int, pair<int, int>>& b)
-        {
-            if (a.second.first > b.second.first) return true;
-            return false;
-        }
-    };
-
 public:
-    int findCheapestPrice(int n, vector<vector<int>>& flights, int src, int dst, int k) {
-        priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, cmp> queue; // <node, <cost, count> (in expore)
-        vector<vector<pair<int, int>>> graph(n); // <<node, cost>>
-        vector<int> cost(n, -1); // explore output
+	int findCheapestPrice(int n, vector<vector<int>>& flights, int src, int dst, int k) {
+		// 0. Graph 구성
+		vector<vector<pair<int, int>>> Graph(n); // <to, price> 
+		vector<int> Dist(n, INT_MAX);
 
-        // 1. graph parse
-        for (vector<int> i : flights)
-            graph[i[0]].push_back(make_pair(i[1], i[2]));
+		for (vector<int> flight : flights)
+		{
+			int from = flight[0];
+			int to = flight[1];
+			int price = flight[2];
+			Graph[from].push_back({ to, price });
+		}
 
-        // 2. start node
-        queue.push(make_pair(src, make_pair(0, 0)));
-        cost[src] = 0;
+		// 1. Dijkstra
+		priority_queue<vector<int>, vector<vector<int>>, greater<>> q; // <price, idx, k>
+		q.push(vector<int>{0, src, -1});
+		Dist[src] = 0;
 
-        // 3. explore
-        while (!queue.empty())
-        {
-            int curNode = queue.top().first;
-            int curCost = queue.top().second.first;
-            int curCount = queue.top().second.second;
-            queue.pop();
+		while (!q.empty())
+		{
+			int price = q.top()[0];
+			int idx = q.top()[1];
+			int stop = q.top()[2];
+			q.pop();
 
-            if (curNode == dst) return curCost;
-            else if (curCount > k) continue;
+			if (idx == dst)
+				return price;
+			if (stop > k || stop > Dist[idx])
+				continue;
 
-            for (pair<int, int> i : graph[curNode])
-            {
-                if ((curCost + i.second < cost[i.first] || cost[i.first] == -1) && curCount <= k)
-                {
-                    queue.push(make_pair(i.first, make_pair(curCost + i.second, curCount + 1)));
-                    cost[i.first] = curCost + i.second;
-                }
-            }
-        }
+			Dist[idx] = stop;
 
-        // 2. return
-        int ret = -1;
-        return ret;
-    }
+			for (pair<int, int> newPath : Graph[idx])
+			{
+				int newIdx = newPath.first;
+				int newPrice = price + newPath.second;
+				q.push({ newPrice, newIdx, stop + 1 });
+			}
+		}
+
+		return -1;
+	}
 };
