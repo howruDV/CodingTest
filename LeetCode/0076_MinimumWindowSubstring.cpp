@@ -1,53 +1,64 @@
-// LeetCode 0076. Minimum Window Substring
-// https://leetcode.com/problems/minimum-window-substring/
+// Leetcode 0076. Minimum Window Substring
+// https://leetcode.com/problems/minimum-window-substring/description/
+// Time Complexity O(n+m)
+
 #include <string>
 #include <unordered_map>
+#include <deque>
 using namespace std;
 
-// - Time Complexity O(n)
-// - Space Complexity O(k)
+// Idea : queue에 발견한 문자열 넣으며 탐색 시작위치 조절하기
+// Time Complexity : O(n+m)
 class Solution {
 public:
-    string minWindow(string s, string t) {
-        unordered_map<char, int> need;
-        int missing = t.length();
-        int left = 0, start = 0, end = INT_MAX;
+	string minWindow(string s, string t) {
+		// 1. 발견해야하는 문자열 기록
+		int findRemain = t.size();
+		unordered_map<char, int> charRemain;
 
-        // 1. char map setting
-        for (int i = 0; i < t.size(); ++i)
-            need[t[i]]++;
+		for (char c : t)
+		{
+			charRemain[c]++;
+		}
 
-        // 2. expand window to right
-        for (int right = 0; right < s.size(); ++right)
-        {
-            // 2.1. find char
-            if (need[s[right]]-- > 0)
-                missing--;
+		// 2. 문자열 탐색
+		deque<int> findIdx;
+		vector<int> shortestWindow; // front, size
 
-            // 2.2. find all chars
-            if (missing == 0)
-            {
-                // reduce window from left
-                while (left < right && need[s[left]] < 0)
-                {
-                    need[s[left]]++;
-                    left++;
-                }
+		for (int i = 0; i < s.size(); ++i)
+		{
+			if (charRemain.count(s[i]))
+			{
+				// 2.1. 위치 업데이트
+				if (charRemain[s[i]] > 0)
+				{
+					findRemain--;
+				}
 
-                if (right - left <= end - start)
-                {
-                    start = left;
-                    end = right;
-                    need[s[left]]++;
-                    missing++;
-                    left++;
-                }
-            }
-        }
+				charRemain[s[i]]--;
+				findIdx.push_back(i);
 
-        // case: can't find
-        if (end == INT_MAX)
-            return "";
-        return s.substr(start, end - start + 1);
-    }
+				// 2.2. 윈도우 업데이트
+				while (findRemain <= 0)
+				{
+					int newSize = findIdx.back() - findIdx.front() + 1;
+
+					if (shortestWindow.empty() || newSize < shortestWindow[1])
+					{
+						shortestWindow = vector<int>{ findIdx.front(), newSize };
+					}
+
+					if (charRemain[s[findIdx.front()]] >= 0)
+					{
+						findRemain++;
+					}
+
+					charRemain[s[findIdx.front()]]++;
+					findIdx.pop_front();
+				}
+			}
+		}
+
+		return shortestWindow.empty() ? "" : s.substr(shortestWindow[0], shortestWindow[1]);
+	}
 };
